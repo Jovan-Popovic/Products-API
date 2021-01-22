@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     minlength: 5,
     maxlength: 25,
-    validate: {},
+    validate: {}, //Needs encrytpion
   },
   email: { type: String, minlength: 5, maxlength: 35, unique: true },
   role: {
@@ -26,5 +26,7 @@ const userSchema = new mongoose.Schema({
   },
   product: [{ type: mongoose.Schema.Types.ObjectId, ref: "product" }],
 });
+
+userSchema.index({ username: 1 }, { unique: true });
 
 module.exports = mongoose.model("user", userSchema);

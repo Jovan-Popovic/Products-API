@@ -21,19 +21,15 @@ const productSchema = new mongoose.Schema({
   },
   price: {
     type: Number,
-    minvalue: 1,
-    maxvalue: 10000,
+    min: 1,
+    max: 10000,
     required: true,
-    validate: {
-      validator: Number.isFloat,
-      message: "{VALUE} is not a float value",
-    },
   },
   quantity: {
     type: Number,
     default: 1,
-    minvalue: 1,
-    maxvalue: 10000,
+    min: 1,
+    max: 10000,
     validate: {
       validator: Number.isInteger,
       message: "{VALUE} is not an integer value",
@@ -44,6 +40,6 @@ const productSchema = new mongoose.Schema({
     required: true,
     ref: "user",
   },
-});
+}).index({ name: 1 }, { unique: true });
 
 module.exports = mongoose.model("product", productSchema);
