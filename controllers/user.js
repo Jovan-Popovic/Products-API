@@ -1,19 +1,19 @@
-const User = require("../models/product");
+const User = require("../models/user");
 
 const findAll = () =>
   new Promise((res, rej) => {
     try {
-      res(User.find().lean().exec());
+      res(User.find().lean());
     } catch (err) {
       console.log(err);
       rej(new Error(err));
     }
   });
 
-const findById = (id) =>
+const findByUsername = (username) =>
   new Promise((res, rej) => {
     try {
-      res(User.findById(id).exec());
+      res(User.findOne({ username }));
     } catch (err) {
       console.log(err);
       rej(new Error(err));
@@ -30,24 +30,36 @@ const create = (user) =>
     }
   });
 
-const findOneAndUpdate = (user, update) =>
+const findOneAndUpdate = (username, update) =>
   new Promise((res, rej) => {
     try {
-      res(User.findOneAndUpdate(user, update).exec());
+      res(
+        User.findOneAndUpdate({ username }, update, {
+          // upsert: true,
+          new: true,
+          useFindAndModify: false,
+        })
+      );
     } catch (err) {
       console.log(err);
       rej(new Error(err));
     }
   });
 
-const deleteOne = (id) =>
+const deleteOne = (username) =>
   new Promise((res, rej) => {
     try {
-      res(User.deleteOne({ _id: id }).exec());
+      res(User.deleteOne({ username }));
     } catch (err) {
       console.log(err);
       rej(new Error(err));
     }
   });
 
-module.exports = { findAll, findById, create, findOneAndUpdate, deleteOne };
+module.exports = {
+  findAll,
+  findByUsername,
+  create,
+  findOneAndUpdate,
+  deleteOne,
+};

@@ -10,10 +10,10 @@ const findAll = () =>
     }
   });
 
-const findById = (id) =>
+const findByName = (name) =>
   new Promise((res, rej) => {
     try {
-      res(Product.findById(id));
+      res(Product.findOne({ name }));
     } catch (err) {
       console.log(err);
       rej(new Error(err));
@@ -23,7 +23,7 @@ const findById = (id) =>
 const create = (product) =>
   new Promise((res, rej) => {
     try {
-      res(Product.create(product));
+      res(Product.create(product).populate("user").exec());
     } catch (err) {
       console.log(err);
       rej(new Error(err));
@@ -50,4 +50,4 @@ const deleteOne = (id) =>
     }
   });
 
-module.exports = { findAll, findById, create, findOneAndUpdate, deleteOne };
+module.exports = { findAll, findByName, create, findOneAndUpdate, deleteOne };
