@@ -1,12 +1,13 @@
 const express = require("express");
+const crypto = require('crypto');
 const { json } = require("body-parser");
+const jwt = require("jsonwebtoken");
 
 require("dotenv").config();
 
 const Product = require("./controllers/product");
 const User = require("./controllers/user");
 const connect = require("./helpers");
-
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -33,15 +34,51 @@ app.get("/user/:username", async (req, res) => {
   }
 });
 
-app.post("/user", async (req, res) => {
+app.post("/singup", async (req, res) => {
   try {
-    const { body } = req;
-    const user = await User.create(body);
-    res.status(201).json(user);
+    const body = req.body;
+    if(body.password.length < 5) {//I'm looking to see if the password is longer than 5
+      let err = { "error": "The password can't be shorter than the minimum allowed length (5)." };
+      res.status(400).json(err);
+    }
+    else if(body.password.length > 25){//I'm looking to see if the password is shorter than 5
+      let err = { "error": "The password can't be longer than the maximum allowed length (25)." };
+      res.status(400).json(err);
+    }
+    else {//If everything is ok then I encrypt the password
+      const cryptoPass = crypto.createHash('sha256').update(body.password).digest('base64');
+      body.password = cryptoPass;
+      body.role = 0;
+      const user = await User.create(body);
+      res.status(201).json(user);
+    }
   } catch (err) {
     res.status(400).json(err);
   }
 });
+
+app.post("/login", async (req, res) => {
+  const body = req.body;
+  const userFind = await User.findByUsername(body.username);
+  if(userFind){ //does user exist
+    let userPass = userFind.password;
+    userPass = userPass.toString();
+    let enterPass = crypto.createHash('sha256').update(body.password).digest('base64');
+    enterPass = enterPass.toString();
+    if(enterPass == userPass) {//compare password with if :)
+      //create and save (_id and username) in token
+      const token = jwt.sign({ _id: userFind._id, username: userFind.username }, process.env.ACCESS_TOKEN_SECRET)
+      res.header('auth-token', token).send(token);
+    }
+    else {
+      console.log(userFind.password)
+      res.status(400).json({ "error": "Password is incorect!" })
+    }
+  }
+  else {
+    res.status(400).json({ "error": "User does not exist" })
+  }
+})
 
 app.put("/user/:username", async (req, res) => {
   try {
