@@ -63,7 +63,9 @@ const verifyToken = (req, res, next) => {
 
   try {
     const verified = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-    req.user = verified;
+    req.userId = verified.id;
+    req.userRole = verified.role
+    next()
   }catch(err) {
     res.status(400).send('Invaid Token');
   }

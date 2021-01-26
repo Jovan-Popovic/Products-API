@@ -15,12 +15,13 @@ const port = process.env.PORT || 5000;
 app.use(json());
 
 //Basic actions for users
-app.get("/users", async (req, res) => {
-  try {
+app.get("/users", User.verifyToken, async (req, res) => {
+  if(req.userRole == 1){//Is user admin
     const users = await User.findAll();
     res.status(200).json(users);
-  } catch (err) {
-    res.status(404).json(err);
+  }
+  else {//else
+    res.status(400).json({ "error": "Access Denided :)" })
   }
 });
 
@@ -67,7 +68,9 @@ app.post("/login", async (req, res) => {
     enterPass = enterPass.toString();
     if(enterPass == userPass) {//compare password with if :)
       //create and save (_id and username) in token
-      const token = jwt.sign({ _id: userFind._id, username: userFind.username }, process.env.ACCESS_TOKEN_SECRET)
+      const id = userFind._id;
+      const role = userFind.role
+      const token = jwt.sign({ id, role }, process.env.ACCESS_TOKEN_SECRET)
       res.header('auth-token', token).send(token);
     }
     else {
@@ -106,7 +109,7 @@ app.delete("/user/:username", async (req, res) => {
 app.get("/user?username=val1&id=val2", async (req, res) => {});
 
 //Basic actions for products
-app.get("/products", async (req, res) => {});
+app.get("/products", User.verifyToken, async (req, res) => {});
 
 app.get("/product/:name", async (req, res) => {});
 
