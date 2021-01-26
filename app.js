@@ -25,7 +25,7 @@ app.get("/users", async (req, res) => {
 app.get("/user/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    const user = await User.findByUsername(username);
+    const user = await User.findOne({ username });
     res.status(200).json(user);
   } catch (err) {
     res.status(404).json(err);
@@ -45,10 +45,9 @@ app.post("/user", async (req, res) => {
 app.put("/user/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    const currentUser = await User.findByUsername(username);
-    const { body: update } = req;
-    const updatedUser = await User.findOneAndUpdate(currentUser, update);
-    res.status(201).json(updatedUser);
+    const { body } = req;
+    const user = await User.findOneAndUpdate(user, body);
+    res.status(201).json(user);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -68,14 +67,30 @@ app.delete("/user/:username", async (req, res) => {
 app.get("/user?username=val1&id=val2", async (req, res) => {});
 
 //Basic actions for products
-app.get("/products", async (req, res) => {});
+app.get("/products", async (req, res) => {
+  try {
+    const products = await Product.findAll();
+    res.status(200).json(products);
+  } catch (err) {
+    res.status(404).json(err);
+  }
+});
 
-app.get("/product/:name", async (req, res) => {});
+app.get("/product/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const product = await Product.findOne({ name });
+    res.status(200).json(product);
+  } catch (err) {
+    res.status(404).json(err);
+  }
+});
 
-app.post("/product/:username", async (req, res) => {
+app.post("/product", async (req, res) => {
   try {
     const { body } = req;
-    const user = await User.findByUsername(body.user); //Not finished
+    const user = await User.findOne({ id: body.user }); //Not finished
+    console.log(user);
     const product = await Product.create(body);
     res.status(201).json(product);
   } catch (err) {
@@ -83,9 +98,26 @@ app.post("/product/:username", async (req, res) => {
   }
 });
 
-app.put("/product/:name", async (req, res) => {});
+app.put("/product/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const { body } = req;
+    const product = await User.findOneAndUpdate(name, body);
+    res.status(201).json(product);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
-app.delete("/product/:name", async (req, res) => {});
+app.delete("/product/:name", async (req, res) => {
+  try {
+    const { name } = req.params;
+    const product = await Product.deleteOne(name);
+    res.status(201).json(product);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
 //Additional routes and actions for products
 app.get("/product_id/:_id", async (req, res) => {});

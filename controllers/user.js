@@ -10,10 +10,10 @@ const findAll = () =>
     }
   });
 
-const findByUsername = (username) =>
+const findOne = (prop) =>
   new Promise((res, rej) => {
     try {
-      res(User.findOne({ username }));
+      res(User.findOne(prop));
     } catch (err) {
       console.log(err);
       rej(new Error(err));
@@ -30,15 +30,19 @@ const create = (user) =>
     }
   });
 
-const findOneAndUpdate = (username, update) =>
+const findOneAndUpdate = (username, body) =>
   new Promise((res, rej) => {
     try {
       res(
-        User.findOneAndUpdate({ username }, update, {
-          // upsert: true,
-          new: true,
-          useFindAndModify: false,
-        })
+        User.findOneAndUpdate(
+          { username },
+          { $set: body },
+          {
+            upsert: true,
+            new: true,
+            useFindAndModify: false,
+          }
+        )
       );
     } catch (err) {
       console.log(err);
@@ -58,7 +62,7 @@ const deleteOne = (username) =>
 
 module.exports = {
   findAll,
-  findByUsername,
+  findOne,
   create,
   findOneAndUpdate,
   deleteOne,

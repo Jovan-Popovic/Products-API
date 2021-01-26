@@ -10,10 +10,10 @@ const findAll = () =>
     }
   });
 
-const findByName = (name) =>
+const findOne = (prop) =>
   new Promise((res, rej) => {
     try {
-      res(Product.findOne({ name }));
+      res(Product.findOne(prop));
     } catch (err) {
       console.log(err);
       rej(new Error(err));
@@ -30,24 +30,36 @@ const create = (product) =>
     }
   });
 
-const findOneAndUpdate = (product, update) =>
+const findOneAndUpdate = (name, body) =>
   new Promise((res, rej) => {
     try {
-      res(Product.findOneAndUpdate(product, update));
+      res(
+        res(
+          Product.findOneAndUpdate(
+            { name },
+            { $set: body },
+            {
+              upsert: true,
+              new: true,
+              useFindAndModify: false,
+            }
+          )
+        )
+      );
     } catch (err) {
       console.log(err);
       rej(new Error(err));
     }
   });
 
-const deleteOne = (id) =>
+const deleteOne = (name) =>
   new Promise((res, rej) => {
     try {
-      res(Product.deleteOne({ _id: id }));
+      res(Product.deleteOne({ name }));
     } catch (err) {
       console.log(err);
       rej(new Error(err));
     }
   });
 
-module.exports = { findAll, findByName, create, findOneAndUpdate, deleteOne };
+module.exports = { findAll, findOne, create, findOneAndUpdate, deleteOne };
