@@ -33,13 +33,13 @@ const create = (product) =>
     }
   });
 
-const findOneAndUpdate = (name, body) =>
+const findOneAndUpdate = (filter, body) =>
   new Promise((res, rej) => {
     try {
       res(
         res(
           Product.findOneAndUpdate(
-            { name },
+            filter,
             { $set: body },
             {
               upsert: true,
@@ -55,10 +55,10 @@ const findOneAndUpdate = (name, body) =>
     }
   });
 
-const deleteOne = (name) =>
+const deleteOne = (filter) =>
   new Promise((res, rej) => {
     try {
-      res(Product.deleteOne({ name }));
+      res(Product.deleteOne(filter));
     } catch (err) {
       console.log(err);
       rej(new Error(err));

@@ -30,12 +30,12 @@ const create = (user) =>
     }
   });
 
-const findOneAndUpdate = (username, body) =>
+const findOneAndUpdate = (filter, body) =>
   new Promise((res, rej) => {
     try {
       res(
         User.findOneAndUpdate(
-          { username },
+          filter,
           { $set: body },
           {
             upsert: true,
@@ -50,10 +50,10 @@ const findOneAndUpdate = (username, body) =>
     }
   });
 
-const deleteOne = (username) =>
+const deleteOne = (filter) =>
   new Promise((res, rej) => {
     try {
-      res(User.deleteOne({ username }));
+      res(User.deleteOne(filter));
     } catch (err) {
       console.log(err);
       rej(new Error(err));

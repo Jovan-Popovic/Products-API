@@ -1,5 +1,5 @@
 const express = require("express");
-const { json } = require("body-parser");
+const { json, urlencoded } = require("body-parser");
 
 require("dotenv").config();
 
@@ -25,7 +25,6 @@ app.get("/users", async (req, res) => {
 app.get("/user/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    console.log(username);
     const user = await User.findOne({ username });
     res.status(200).json(user);
   } catch (err) {
@@ -33,11 +32,11 @@ app.get("/user/:username", async (req, res) => {
   }
 });
 
-app.post("/user", async (req, res) => {
-  //Route will probably be changed to /user/:username
+app.post("/user/:username", async (req, res) => {
   try {
+    const { username } = req.params;
     const { body } = req;
-    const user = await User.create(body);
+    const user = await User.create({ username, ...body });
     res.status(201).json(user);
   } catch (err) {
     res.status(400).json(err);
@@ -48,7 +47,7 @@ app.put("/user/:username", async (req, res) => {
   try {
     const { username } = req.params;
     const { body } = req;
-    const user = await User.findOneAndUpdate(username, body);
+    const user = await User.findOneAndUpdate({ username }, body);
     res.status(201).json(user);
   } catch (err) {
     res.status(400).json(err);
@@ -58,8 +57,8 @@ app.put("/user/:username", async (req, res) => {
 app.delete("/user/:username", async (req, res) => {
   try {
     const { username } = req.params;
-    const user = await User.deleteOne(username);
-    res.status(201).json(user);
+    const user = await User.deleteOne({ username });
+    res.status(200).json(user);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -80,7 +79,6 @@ app.post("/user", async (req, res) => {
   try {
     const { username, id: _id } = req.query;
     const { body } = req;
-    console.log(username, _id);
     const user = await User.create({ username, _id, ...body });
     res.status(201).json(user);
   } catch (err) {
@@ -92,7 +90,7 @@ app.put("/user", async (req, res) => {
   try {
     const { username, id: _id } = req.query;
     const { body } = req;
-    const user = await User.findOneAndUpdate(username, { ...body });
+    const user = await User.findOneAndUpdate({ username, _id }, body);
     res.status(201).json(user);
   } catch (err) {
     res.status(400).json(err);
@@ -102,8 +100,8 @@ app.put("/user", async (req, res) => {
 app.delete("/user", async (req, res) => {
   try {
     const { username, id: _id } = req.query;
-    const user = await User.deleteOne(username);
-    res.status(201).json(user);
+    const user = await User.deleteOne({ username, _id });
+    res.status(200).json(user);
   } catch (err) {
     res.status(400).json(err);
   }
@@ -129,11 +127,11 @@ app.get("/product/:name", async (req, res) => {
   }
 });
 
-app.post("/product", async (req, res) => {
-  //Route will probably be changed to /product/:name
+app.post("/product/:name", async (req, res) => {
   try {
+    const { name } = req.params;
     const { body } = req;
-    const product = await Product.create(body);
+    const product = await Product.create({ name, ...body });
     res.status(201).json(product);
   } catch (err) {
     res.status(400).json(err);
@@ -144,7 +142,7 @@ app.put("/product/:name", async (req, res) => {
   try {
     const { name } = req.params;
     const { body } = req;
-    const product = await Product.findOneAndUpdate(name, body);
+    const product = await Product.findOneAndUpdate({ name }, body);
     res.status(201).json(product);
   } catch (err) {
     console.log(err);
@@ -155,27 +153,90 @@ app.put("/product/:name", async (req, res) => {
 app.delete("/product/:name", async (req, res) => {
   try {
     const { name } = req.params;
-    const product = await Product.deleteOne(name);
-    res.status(201).json(product);
+    const product = await Product.deleteOne({ name });
+    res.status(200).json(product);
   } catch (err) {
     res.status(400).json(err);
   }
 });
 
 //Additional routes and actions for products
-app.get("/product_id/:_id", async (req, res) => {});
+app.get("/product_id/:_id", async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const product = await Product.findOne({ _id });
+    res.status(200).json(product);
+  } catch (err) {
+    res.status(404).json(err);
+  }
+});
 
-app.put("/product_id/:_id", async (req, res) => {});
+app.put("/product_id/:_id", async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const { body } = req;
+    const product = await Product.findOneAndUpdate({ _id }, body);
+    res.status(201).json(product);
+  } catch (err) {
+    console.log(err);
+    res.status(400).json(err);
+  }
+});
 
-app.delete("/product_id/:_id", async (req, res) => {});
+app.delete("/product_id/:_id", async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const product = await Product.deleteOne({ _id });
+    res.status(200).json(product);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
-app.delete("/product_dec/:_id", async (req, res) => {});
+app.delete("/product_dec/:_id", async (req, res) => {
+  try {
+    //Not sure if it works as it should
+    const { _id } = req.params;
+    const product = await Product.deleteOne({ _id });
+    res.status(200).json(product);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
-app.post("/product_inc/:_id", async (req, res) => {});
+app.post("/product_inc/:_id", async (req, res) => {
+  try {
+    //Not sure if it works as it should
+    const { _id } = req.params;
+    const { body } = req;
+    const product = await Product.create({ _id, ...body });
+    res.status(201).json(product);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
-app.get("/product_num/:_id", async (req, res) => {});
+app.get("/product_num/:_id", async (req, res) => {
+  try {
+    //Not sure if it works as it should
+    const { _id } = req.params;
+    const product = await Product.findOne({ _id });
+    res.status(200).json({ quantity: product.quantity });
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
-app.post("/products?limit=num1&offset=num2", async (req, res) => {});
+app.get("/products", async (req, res) => {
+  try {
+    //Not finished
+    const { limit, offset } = req.query;
+    const products = Product.findAll({});
+    res.status(201).json({ quantity: product.quantity });
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
 //Connecting to the database
 connect(process.env.DB_URL)
