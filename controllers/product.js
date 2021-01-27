@@ -1,4 +1,5 @@
 const Product = require("../models/product");
+const User = require("../models/user");
 
 const findAll = () =>
   new Promise((res, rej) => {
@@ -21,9 +22,11 @@ const findOne = (prop) =>
   });
 
 const create = (product) =>
-  new Promise((res, rej) => {
+  new Promise(async (res, rej) => {
     try {
-      res(Product.create(product).populate("user").exec());
+      await Product.create(product);
+      await User.findOne(product.id).populate("product").exec(); //Not finished, should populate product array of the user document
+      res(Product.findOne(product).populate("user").exec());
     } catch (err) {
       console.log(err);
       rej(new Error(err));

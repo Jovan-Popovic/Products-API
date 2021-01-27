@@ -25,6 +25,7 @@ app.get("/users", async (req, res) => {
 app.get("/user/:username", async (req, res) => {
   try {
     const { username } = req.params;
+    console.log(username);
     const user = await User.findOne({ username });
     res.status(200).json(user);
   } catch (err) {
@@ -33,6 +34,7 @@ app.get("/user/:username", async (req, res) => {
 });
 
 app.post("/user", async (req, res) => {
+  //Route will probably be changed to /user/:username
   try {
     const { body } = req;
     const user = await User.create(body);
@@ -46,7 +48,7 @@ app.put("/user/:username", async (req, res) => {
   try {
     const { username } = req.params;
     const { body } = req;
-    const user = await User.findOneAndUpdate(user, body);
+    const user = await User.findOneAndUpdate(username, body);
     res.status(201).json(user);
   } catch (err) {
     res.status(400).json(err);
@@ -64,7 +66,48 @@ app.delete("/user/:username", async (req, res) => {
 });
 
 //Additional routes and actions for products
-app.get("/user?username=val1&id=val2", async (req, res) => {});
+app.get("/user", async (req, res) => {
+  try {
+    const { username, id: _id } = req.query;
+    const user = await User.findOne({ username, _id });
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(404).json(err);
+  }
+});
+
+app.post("/user", async (req, res) => {
+  try {
+    const { username, id: _id } = req.query;
+    const { body } = req;
+    console.log(username, _id);
+    const user = await User.create({ username, _id, ...body });
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
+
+app.put("/user", async (req, res) => {
+  try {
+    const { username, id: _id } = req.query;
+    const { body } = req;
+    const user = await User.findOneAndUpdate(username, { ...body });
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
+
+app.delete("/user", async (req, res) => {
+  try {
+    const { username, id: _id } = req.query;
+    const user = await User.deleteOne(username);
+    res.status(201).json(user);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
 //Basic actions for products
 app.get("/products", async (req, res) => {
@@ -87,10 +130,9 @@ app.get("/product/:name", async (req, res) => {
 });
 
 app.post("/product", async (req, res) => {
+  //Route will probably be changed to /product/:name
   try {
     const { body } = req;
-    const user = await User.findOne({ id: body.user }); //Not finished
-    console.log(user);
     const product = await Product.create(body);
     res.status(201).json(product);
   } catch (err) {
@@ -102,9 +144,10 @@ app.put("/product/:name", async (req, res) => {
   try {
     const { name } = req.params;
     const { body } = req;
-    const product = await User.findOneAndUpdate(name, body);
+    const product = await Product.findOneAndUpdate(name, body);
     res.status(201).json(product);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
