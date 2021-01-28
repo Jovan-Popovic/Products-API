@@ -30,19 +30,15 @@ const create = (user) =>
     }
   });
 
-const findOneAndUpdate = (filter, body) =>
+const findOneAndUpdate = (filter, update) =>
   new Promise((res, rej) => {
     try {
       res(
-        User.findOneAndUpdate(
-          filter,
-          { $set: body },
-          {
-            upsert: true,
-            new: true,
-            useFindAndModify: false,
-          }
-        )
+        User.findOneAndUpdate(filter, update, {
+          upsert: true,
+          new: true,
+          useFindAndModify: false,
+        })
       );
     } catch (err) {
       console.log(err);

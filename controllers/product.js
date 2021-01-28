@@ -1,10 +1,10 @@
 const Product = require("../models/product");
 const User = require("../models/user");
 
-const findAll = () =>
+const findAll = (limit = 0, offset = 0) =>
   new Promise((res, rej) => {
     try {
-      res(Product.find().lean());
+      res(Product.find().skip(parseInt(offset)).limit(parseInt(limit)));
     } catch (err) {
       console.log(err);
       rej(new Error(err));
@@ -33,20 +33,16 @@ const create = (product) =>
     }
   });
 
-const findOneAndUpdate = (filter, body) =>
+const findOneAndUpdate = (filter, update) =>
   new Promise((res, rej) => {
     try {
       res(
         res(
-          Product.findOneAndUpdate(
-            filter,
-            { $set: body },
-            {
-              upsert: true,
-              new: true,
-              useFindAndModify: false,
-            }
-          )
+          Product.findOneAndUpdate(filter, update, {
+            upsert: true,
+            new: true,
+            useFindAndModify: false,
+          })
         )
       );
     } catch (err) {

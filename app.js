@@ -6,6 +6,7 @@ require("dotenv").config();
 const Product = require("./controllers/product");
 const User = require("./controllers/user");
 const connect = require("./helpers");
+const { off } = require("./models/user");
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -90,7 +91,7 @@ app.put("/user", async (req, res) => {
   try {
     const { username, id: _id } = req.query;
     const { body } = req;
-    const user = await User.findOneAndUpdate({ username, _id }, body);
+    const user = await User.findOneAndUpdate({ username, _id }, { $set: body });
     res.status(201).json(user);
   } catch (err) {
     res.status(400).json(err);
@@ -110,7 +111,8 @@ app.delete("/user", async (req, res) => {
 //Basic actions for products
 app.get("/products", async (req, res) => {
   try {
-    const products = await Product.findAll();
+    const { limit, offset } = req.query;
+    const products = await Product.findAll(limit, offset);
     res.status(200).json(products);
   } catch (err) {
     res.status(404).json(err);
@@ -142,7 +144,7 @@ app.put("/product/:name", async (req, res) => {
   try {
     const { name } = req.params;
     const { body } = req;
-    const product = await Product.findOneAndUpdate({ name }, body);
+    const product = await Product.findOneAndUpdate({ name }, { $set: body });
     res.status(201).json(product);
   } catch (err) {
     console.log(err);
@@ -175,7 +177,7 @@ app.put("/product_id/:_id", async (req, res) => {
   try {
     const { _id } = req.params;
     const { body } = req;
-    const product = await Product.findOneAndUpdate({ _id }, body);
+    const product = await Product.findOneAndUpdate({ _id }, { $set: body });
     res.status(201).json(product);
   } catch (err) {
     console.log(err);
@@ -193,24 +195,27 @@ app.delete("/product_id/:_id", async (req, res) => {
   }
 });
 
-app.delete("/product_dec/:_id", async (req, res) => {
+app.put("/product_dec/:_id", async (req, res) => {
   try {
-    //Not sure if it works as it should
     const { _id } = req.params;
-    const product = await Product.deleteOne({ _id });
-    res.status(200).json(product);
+    const product = await Product.findOneAndUpdate(
+      { _id },
+      { $inc: { quantity: -1 } }
+    );
+    res.status(200).json({ quantity: product.quantity });
   } catch (err) {
     res.status(400).json(err);
   }
 });
 
-app.post("/product_inc/:_id", async (req, res) => {
+app.put("/product_inc/:_id", async (req, res) => {
   try {
-    //Not sure if it works as it should
     const { _id } = req.params;
-    const { body } = req;
-    const product = await Product.create({ _id, ...body });
-    res.status(201).json(product);
+    const product = await Product.findOneAndUpdate(
+      { _id },
+      { $inc: { quantity: 1 } }
+    );
+    res.status(201).json({ quantity: product.quantity });
   } catch (err) {
     res.status(400).json(err);
   }
@@ -222,17 +227,6 @@ app.get("/product_num/:_id", async (req, res) => {
     const { _id } = req.params;
     const product = await Product.findOne({ _id });
     res.status(200).json({ quantity: product.quantity });
-  } catch (err) {
-    res.status(400).json(err);
-  }
-});
-
-app.get("/products", async (req, res) => {
-  try {
-    //Not finished
-    const { limit, offset } = req.query;
-    const products = Product.findAll({});
-    res.status(201).json({ quantity: product.quantity });
   } catch (err) {
     res.status(400).json(err);
   }
