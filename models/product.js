@@ -42,7 +42,7 @@ const productSchema = new mongoose.Schema(
       ref: "user",
     },
   },
-  { timestamps: true }
+  { collection: "products", timestamps: true }
 ).index({ name: 1 }, { unique: true });
 
 module.exports = mongoose.model("product", productSchema);

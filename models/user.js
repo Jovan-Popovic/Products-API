@@ -13,7 +13,8 @@ const userSchema = new mongoose.Schema(
       type: String,
       minlength: 5,
       maxlength: 25,
-      required: true, //Needs encrytpion
+      required: true,
+      validate: /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d).*$/,
     },
     email: {
       type: String,
@@ -33,7 +34,7 @@ const userSchema = new mongoose.Schema(
     },
     product: [{ type: mongoose.Schema.Types.ObjectId, ref: "product" }],
   },
-  { timestamps: true }
+  { collection: "users", timestamps: true }
 );
 
 userSchema.index({ username: 1 }, { unique: true });

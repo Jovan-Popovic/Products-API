@@ -1,5 +1,5 @@
 const express = require("express");
-const { json, urlencoded } = require("body-parser");
+const { json } = require("body-parser");
 
 require("dotenv").config();
 
@@ -12,6 +12,21 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 app.use(json());
+
+//Root route
+app.get("/", (req, res) => {
+  try {
+    const data = {
+      title: "Welcome to products API",
+      description:
+        "This is a simple REST API, created for the purpose of excercising with ExpressJS and MongoDB.",
+      note: "If you want to get access to the routes, you will need a JWT!",
+    };
+    res.status(200).json(data);
+  } catch (err) {
+    res.status(400).json(err);
+  }
+});
 
 //Basic actions for users
 app.get("/users", async (req, res) => {
