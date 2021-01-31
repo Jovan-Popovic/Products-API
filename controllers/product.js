@@ -25,7 +25,7 @@ const create = (product) =>
   new Promise(async (res, rej) => {
     try {
       await Product.create(product);
-      await User.findOne(product.id).populate("product").exec(); //Not finished, should populate product array of the user document
+      await User.findOne({ _id: product.user }).populate("product").exec(); //Not finished, should populate product array of the user document
       res(Product.findOne(product).populate("user").exec());
     } catch (err) {
       console.log(err);

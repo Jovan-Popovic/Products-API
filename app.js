@@ -6,10 +6,9 @@ require("dotenv").config();
 const Product = require("./controllers/product");
 const User = require("./controllers/user");
 const connect = require("./helpers");
-const { off } = require("./models/user");
 
 const app = express();
-const port = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 app.use(json());
 
@@ -24,6 +23,7 @@ app.get("/", (req, res) => {
     };
     res.status(200).json(data);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -34,6 +34,7 @@ app.get("/users", async (req, res) => {
     const users = await User.findAll();
     res.status(200).json(users);
   } catch (err) {
+    console.log(err);
     res.status(404).json(err);
   }
 });
@@ -44,6 +45,7 @@ app.get("/user/:username", async (req, res) => {
     const user = await User.findOne({ username });
     res.status(200).json(user);
   } catch (err) {
+    console.log(err);
     res.status(404).json(err);
   }
 });
@@ -55,6 +57,7 @@ app.post("/user/:username", async (req, res) => {
     const user = await User.create({ username, ...body });
     res.status(201).json(user);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -66,6 +69,7 @@ app.put("/user/:username", async (req, res) => {
     const user = await User.findOneAndUpdate({ username }, body);
     res.status(201).json(user);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -76,6 +80,7 @@ app.delete("/user/:username", async (req, res) => {
     const user = await User.deleteOne({ username });
     res.status(200).json(user);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -87,6 +92,7 @@ app.get("/user", async (req, res) => {
     const user = await User.findOne({ username, _id });
     res.status(200).json(user);
   } catch (err) {
+    console.log(err);
     res.status(404).json(err);
   }
 });
@@ -98,6 +104,7 @@ app.post("/user", async (req, res) => {
     const user = await User.create({ username, _id, ...body });
     res.status(201).json(user);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -109,6 +116,7 @@ app.put("/user", async (req, res) => {
     const user = await User.findOneAndUpdate({ username, _id }, { $set: body });
     res.status(201).json(user);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -119,6 +127,7 @@ app.delete("/user", async (req, res) => {
     const user = await User.deleteOne({ username, _id });
     res.status(200).json(user);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -130,6 +139,7 @@ app.get("/products", async (req, res) => {
     const products = await Product.findAll(limit, offset);
     res.status(200).json(products);
   } catch (err) {
+    console.log(err);
     res.status(404).json(err);
   }
 });
@@ -140,6 +150,7 @@ app.get("/product/:name", async (req, res) => {
     const product = await Product.findOne({ name });
     res.status(200).json(product);
   } catch (err) {
+    console.log(err);
     res.status(404).json(err);
   }
 });
@@ -151,6 +162,7 @@ app.post("/product/:name", async (req, res) => {
     const product = await Product.create({ name, ...body });
     res.status(201).json(product);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -173,6 +185,7 @@ app.delete("/product/:name", async (req, res) => {
     const product = await Product.deleteOne({ name });
     res.status(200).json(product);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -184,6 +197,7 @@ app.get("/product_id/:_id", async (req, res) => {
     const product = await Product.findOne({ _id });
     res.status(200).json(product);
   } catch (err) {
+    console.log(err);
     res.status(404).json(err);
   }
 });
@@ -206,6 +220,7 @@ app.delete("/product_id/:_id", async (req, res) => {
     const product = await Product.deleteOne({ _id });
     res.status(200).json(product);
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -219,6 +234,7 @@ app.put("/product_dec/:_id", async (req, res) => {
     );
     res.status(200).json({ quantity: product.quantity });
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -232,6 +248,7 @@ app.put("/product_inc/:_id", async (req, res) => {
     );
     res.status(201).json({ quantity: product.quantity });
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -243,6 +260,7 @@ app.get("/product_num/:_id", async (req, res) => {
     const product = await Product.findOne({ _id });
     res.status(200).json({ quantity: product.quantity });
   } catch (err) {
+    console.log(err);
     res.status(400).json(err);
   }
 });
@@ -251,8 +269,8 @@ app.get("/product_num/:_id", async (req, res) => {
 connect(process.env.DB_URL)
   .then(() =>
     //Connecting to the server
-    app.listen(port, () =>
-      console.log(`Server is running on the port ${port}.`)
+    app.listen(PORT, () =>
+      console.log(`Server is running on the port ${PORT}.`)
     )
   )
   .catch((err) => console.error("Unable to connect with the database:", err));
