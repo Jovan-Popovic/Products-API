@@ -25,7 +25,16 @@ const create = (product) =>
   new Promise(async (res, rej) => {
     try {
       await Product.create(product);
-      await User.findOne({ _id: product.user }).populate("product").exec(); //Not finished, should populate product array of the user document
+      await User.findOneAndUpdate(
+        { _id: product.user },
+        {
+          $push: {
+            product: await Product.findOne(product, ["_id"]),
+          },
+        }
+      )
+        .populate("product")
+        .exec();
       res(Product.findOne(product).populate("user").exec());
     } catch (err) {
       console.log(err);
@@ -37,13 +46,11 @@ const findOneAndUpdate = (filter, update) =>
   new Promise((res, rej) => {
     try {
       res(
-        res(
-          Product.findOneAndUpdate(filter, update, {
-            upsert: true,
-            new: true,
-            useFindAndModify: false,
-          })
-        )
+        Product.findOneAndUpdate(filter, update, {
+          upsert: true,
+          new: true,
+          useFindAndModify: false,
+        })
       );
     } catch (err) {
       console.log(err);
@@ -52,8 +59,17 @@ const findOneAndUpdate = (filter, update) =>
   });
 
 const deleteOne = (filter) =>
-  new Promise((res, rej) => {
+  new Promise(async (res, rej) => {
     try {
+      const { user } = await Product.findOne(filter, ["user"]);
+      await User.findOneAndUpdate(
+        { _id: user },
+        {
+          $pull: {
+            product: await Product.findOne(filter, ["_id"]),
+          },
+        }
+      );
       res(Product.deleteOne(filter));
     } catch (err) {
       console.log(err);

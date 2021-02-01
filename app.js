@@ -5,7 +5,7 @@ require("dotenv").config();
 
 const Product = require("./controllers/product");
 const User = require("./controllers/user");
-const connect = require("./helpers");
+const { connect } = require("./helpers");
 
 const app = express();
 const PORT = process.env.PORT || 5000;
