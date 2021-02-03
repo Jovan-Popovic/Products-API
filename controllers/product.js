@@ -62,12 +62,12 @@ const deleteOne = (filter) =>
   new Promise(async (res, rej) => {
     try {
       const { user } = await Product.findOne(filter, ["user"]);
-      //This line of code is not working
+      const { _id } = await Product.findOne(filter, ["_id"]);
       await User.findOneAndUpdate(
         { _id: user },
         {
           $pull: {
-            product: await Product.findOne(filter, ["_id"]),
+            product: _id,
           },
         }
       );
