@@ -4,9 +4,9 @@
   "description": "Simple REST API, consists of 3 collections - users and products",
   "main": "app.js",
   "scripts": {
-    "start": "nodemon app"
+    "start": "nodemon start app.js"
   },
-  "author": "",
+  "author": "Jovan Popovic",
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.19.0",
