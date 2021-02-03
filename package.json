@@ -2,7 +2,7 @@
   "name": "products-api",
   "version": "1.0.0",
   "description": "Simple REST API, consists of 3 collections - users and products",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "nodemon app"
   },

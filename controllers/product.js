@@ -62,6 +62,7 @@ const deleteOne = (filter) =>
   new Promise(async (res, rej) => {
     try {
       const { user } = await Product.findOne(filter, ["user"]);
+      //This line of code is not working
       await User.findOneAndUpdate(
         { _id: user },
         {
