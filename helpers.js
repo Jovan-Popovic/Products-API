@@ -30,15 +30,20 @@ const sign = (user, res) =>
   );
 
 //Action function is what will be executed in request if the token is verified
-const completeRequest = (req, res, action) =>
-  jwt.verify(req.token, "secretkey", async (err) => {
-    !err
-      ? action()
-      : res
-          .status(403)
-          .json({ error: "You need to be logged in to access this route!" });
-  });
-
+const execRequest = (req, res, status, action) => {
+  try {
+    jwt.verify(req.token, "secretkey", async (err) => {
+      !err
+        ? action()
+        : res
+            .status(403)
+            .json({ error: "You need to be logged in to access this route!" });
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(status).json(err);
+  }
+};
 // Send email to admins when new product is added
 
 const sendEmail = (product) => {
@@ -73,4 +78,4 @@ const sendEmail = (product) => {
   );
 };
 
-module.exports = { connect, verifyToken, sign, completeRequest, sendEmail };
+module.exports = { connect, verifyToken, sign, execRequest, sendEmail };

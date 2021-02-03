@@ -9,7 +9,7 @@ const {
   connect,
   verifyToken,
   sign,
-  completeRequest,
+  execRequest,
   sendEmail,
 } = require("./helpers");
 
@@ -48,28 +48,18 @@ app.post("/login", async (req, res) => {
 
 //Basic actions for users
 app.get("/users", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const users = await User.findAll();
-      res.status(200).json(users);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(404).json(err);
-  }
+  execRequest(req, res, 404, async () => {
+    const users = await User.findAll();
+    res.status(200).json(users);
+  });
 });
 
 app.get("/user/:username", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { username } = req.params;
-      const user = await User.findOne({ username });
-      res.status(200).json(user);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(404).json(err);
-  }
+  execRequest(req, res, 404, async () => {
+    const { username } = req.params;
+    const user = await User.findOne({ username });
+    res.status(200).json(user);
+  });
 });
 
 app.post("/user/:username", async (req, res) => {
@@ -85,44 +75,29 @@ app.post("/user/:username", async (req, res) => {
 });
 
 app.put("/user/:username", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { username } = req.params;
-      const { body } = req;
-      const user = await User.findOneAndUpdate({ username }, body);
-      res.status(201).json(user);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { username } = req.params;
+    const { body } = req;
+    const user = await User.findOneAndUpdate({ username }, body);
+    res.status(201).json(user);
+  });
 });
 
 app.delete("/user/:username", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { username } = req.params;
-      const user = await User.deleteOne({ username });
-      res.status(200).json(user);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { username } = req.params;
+    const user = await User.deleteOne({ username });
+    res.status(200).json(user);
+  });
 });
 
 //Additional routes and actions for products
 app.get("/user", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { username, id: _id } = req.query;
-      const user = await User.findOne({ username, _id });
-      res.status(200).json(user);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(404).json(err);
-  }
+  execRequest(req, res, 404, async () => {
+    const { username, id: _id } = req.query;
+    const user = await User.findOne({ username, _id });
+    res.status(200).json(user);
+  });
 });
 
 app.post("/user", async (req, res) => {
@@ -138,189 +113,120 @@ app.post("/user", async (req, res) => {
 });
 
 app.put("/user", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { username, id: _id } = req.query;
-      const { body } = req;
-      const user = await User.findOneAndUpdate(
-        { username, _id },
-        { $set: body }
-      );
-      res.status(201).json(user);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { username, id: _id } = req.query;
+    const { body } = req;
+    const user = await User.findOneAndUpdate({ username, _id }, { $set: body });
+    res.status(201).json(user);
+  });
 });
 
 app.delete("/user", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { username, id: _id } = req.query;
-      const user = await User.deleteOne({ username, _id });
-      res.status(200).json(user);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { username, id: _id } = req.query;
+    const user = await User.deleteOne({ username, _id });
+    res.status(200).json(user);
+  });
 });
 
 //Basic actions for products
 app.get("/products", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { limit, offset } = req.query;
-      const products = await Product.findAll(limit, offset);
-      res.status(200).json(products);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(404).json(err);
-  }
+  execRequest(req, res, 404, async () => {
+    const { limit, offset } = req.query;
+    const products = await Product.findAll(limit, offset);
+    res.status(200).json(products);
+  });
 });
 
 app.get("/product/:name", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { name } = req.params;
-      const product = await Product.findOne({ name });
-      res.status(200).json(product);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(404).json(err);
-  }
+  execRequest(req, res, 404, async () => {
+    const { name } = req.params;
+    const product = await Product.findOne({ name });
+    res.status(200).json(product);
+  });
 });
 
 app.post("/product/:name", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { name } = req.params;
-      const { body } = req;
-      const product = await Product.create({ name, ...body });
-      //sendEmail(product);
-      res.status(201).json(product);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { name } = req.params;
+    const { body } = req;
+    const product = await Product.create({ name, ...body });
+    //sendEmail(product);
+    res.status(201).json(product);
+  });
 });
 
 app.put("/product/:name", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { name } = req.params;
-      const { body } = req;
-      const product = await Product.findOneAndUpdate({ name }, { $set: body });
-      res.status(201).json(product);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { name } = req.params;
+    const { body } = req;
+    const product = await Product.findOneAndUpdate({ name }, { $set: body });
+    res.status(201).json(product);
+  });
 });
 
 app.delete("/product/:name", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { name } = req.params;
-      const product = await Product.deleteOne({ name });
-      res.status(200).json(product);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { name } = req.params;
+    const product = await Product.deleteOne({ name });
+    res.status(200).json(product);
+  });
 });
 
 //Additional routes and actions for products
 app.get("/product_id/:_id", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { _id } = req.params;
-      const product = await Product.findOne({ _id });
-      res.status(200).json(product);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(404).json(err);
-  }
+  execRequest(req, res, 404, async () => {
+    const { _id } = req.params;
+    const product = await Product.findOne({ _id });
+    res.status(200).json(product);
+  });
 });
 
 app.put("/product_id/:_id", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { _id } = req.params;
-      const { body } = req;
-      const product = await Product.findOneAndUpdate({ _id }, { $set: body });
-      res.status(201).json(product);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { _id } = req.params;
+    const { body } = req;
+    const product = await Product.findOneAndUpdate({ _id }, { $set: body });
+    res.status(201).json(product);
+  });
 });
 
 app.delete("/product_id/:_id", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { _id } = req.params;
-      const product = await Product.deleteOne({ _id });
-      res.status(200).json(product);
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { _id } = req.params;
+    const product = await Product.deleteOne({ _id });
+    res.status(200).json(product);
+  });
 });
 
 app.put("/product_dec/:_id", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { _id } = req.params;
-      const product = await Product.findOneAndUpdate(
-        { _id },
-        { $inc: { quantity: -1 } }
-      );
-      res.status(200).json({ quantity: product.quantity });
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { _id } = req.params;
+    const product = await Product.findOneAndUpdate(
+      { _id },
+      { $inc: { quantity: -1 } }
+    );
+    res.status(200).json({ quantity: product.quantity });
+  });
 });
 
 app.put("/product_inc/:_id", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      const { _id } = req.params;
-      const product = await Product.findOneAndUpdate(
-        { _id },
-        { $inc: { quantity: 1 } }
-      );
-      res.status(201).json({ quantity: product.quantity });
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { _id } = req.params;
+    const product = await Product.findOneAndUpdate(
+      { _id },
+      { $inc: { quantity: 1 } }
+    );
+    res.status(201).json({ quantity: product.quantity });
+  });
 });
 
 app.get("/product_num/:_id", verifyToken, (req, res) => {
-  try {
-    completeRequest(req, res, async () => {
-      //Not sure if it works as it should
-      const { _id } = req.params;
-      const product = await Product.findOne({ _id });
-      res.status(200).json({ quantity: product.quantity });
-    });
-  } catch (err) {
-    console.log(err);
-    res.status(400).json(err);
-  }
+  execRequest(req, res, 400, async () => {
+    const { _id } = req.params;
+    const product = await Product.findOne({ _id });
+    res.status(200).json({ quantity: product.quantity });
+  });
 });
 
 //Connecting to the database
